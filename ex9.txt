@@ -1,94 +1,74 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Electricity Bill Calculator</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f2f2f2;
-            padding: 30px;
-        }
-
-        .container {
-            max-width: 700px;
-            margin: auto;
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-        }
-
-        input[type="number"],
-        input[type="text"] {
-            width: 95%;
-            padding: 8px;
-            margin: 8px 0 15px;
-        }
-
-        input[type="submit"] {
-            padding: 10px 18px;
-            background: #1a365d;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        th, td {
-            border: 1px solid #555;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background: #1a365d;
-            color: white;
-        }
-
-        .bill {
-            margin-top: 20px;
-            padding: 15px;
-            background: #e8f5e9;
-        }
-    </style>
+    <title>Electricity Billing Terminal</title>
 </head>
 <body>
 
-<div class="container">
-    <h2>Electricity Board Bill Processing</h2>
+<h2>Electricity Board Bill Processing Engine</h2>
 
-    <form method="POST" action="">
-        <label>Consumer ID:</label>
-        <input type="number" name="cid" required>
+<form method="POST" action="">
+    Consumer ID:
+    <input type="number" name="cid" min="1" required>
+    <br><br>
 
-        <label>Consumer Name:</label>
-        <input type="text" name="cname" required>
+    Consumer Name:
+    <input type="text" name="cname" required>
+    <br><br>
 
-        <label>Units Consumed:</label>
-        <input type="number" name="units" min="0" required>
+    Units Consumed:
+    <input type="number" name="units" min="0" required>
+    <br><br>
 
-        <input type="submit" name="calc" value="Generate Invoice">
-    </form>
+    <input type="submit" name="calc" value="Generate Invoice">
+</form>
 
 <?php
-if (isset($_POST["calc"])) {
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db = "eb_db";
 
+// Connect to MySQL server
+$conn = new mysqli($host, $user, $pass);
+
+if ($conn->connect_error) {
+    die("DBMS Connection Failed: " . $conn->connect_error);
+}
+
+// Create database
+if (!$conn->query("CREATE DATABASE IF NOT EXISTS eb_db")) {
+    die("Database Creation Failed: " . $conn->error);
+}
+
+// Select database
+$conn->select_db($db);
+
+// Create billing table
+$table_sql = "
+    CREATE TABLE IF NOT EXISTS eb_bills (
+        cid INT,
+        cname VARCHAR(40),
+        units INT,
+        amount DECIMAL(10,2)
+    )
+";
+
+if (!$conn->query($table_sql)) {
+    die("Table Creation Failed: " . $conn->error);
+}
+
+// Process submitted form
+if (isset($_POST["calc"])) {
     $cid = (int) $_POST["cid"];
     $cname = trim($_POST["cname"]);
     $units = (int) $_POST["units"];
 
-    if ($units < 0) {
-        die("Units consumed cannot be negative.");
+    if ($cid <= 0 || $units < 0 || $cname == "") {
+        die("Please enter valid consumer details.");
     }
 
-    // Calculate bill amount using slab rates
+    // Calculate bill amount
     if ($units <= 100) {
         $bill_amt = $units * 3.00;
     } elseif ($units <= 300) {
@@ -99,77 +79,54 @@ if (isset($_POST["calc"])) {
                   + (($units - 300) * 6.00);
     }
 
-    // Connect to MySQL server
-    $conn = new mysqli("localhost", "root", "");
-
-    if ($conn->connect_error) {
-        die("Database connection failed: " . $conn->connect_error);
-    }
-
-    // Create and select database
-    $conn->query("CREATE DATABASE IF NOT EXISTS eb_db");
-    $conn->select_db("eb_db");
-
-    // Create billing table
-    $table_sql = "
-        CREATE TABLE IF NOT EXISTS eb_bills (
-            cid INT,
-            cname VARCHAR(40),
-            units INT,
-            amount DECIMAL(10,2)
-        )
+    // Insert bill using prepared statement
+    $insert_sql = "
+        INSERT INTO eb_bills (cid, cname, units, amount)
+        VALUES (?, ?, ?, ?)
     ";
 
-    if (!$conn->query($table_sql)) {
-        die("Table creation failed: " . $conn->error);
-    }
-
-    // Insert billing record securely
-    $stmt = $conn->prepare(
-        "INSERT INTO eb_bills (cid, cname, units, amount)
-         VALUES (?, ?, ?, ?)"
-    );
-
+    $stmt = $conn->prepare($insert_sql);
     $stmt->bind_param("isid", $cid, $cname, $units, $bill_amt);
     $stmt->execute();
     $stmt->close();
 
-    echo "<div class='bill'>";
-    echo "<h3>Electricity Bill</h3>";
-    echo "Consumer ID: " . htmlspecialchars($cid) . "<br>";
-    echo "Consumer Name: " . htmlspecialchars($cname) . "<br>";
-    echo "Units Consumed: " . htmlspecialchars($units) . "<br>";
-    echo "<strong>Total Bill: ₹" . number_format($bill_amt, 2) . "</strong>";
-    echo "</div>";
+    echo "<h4>Invoice generated and saved successfully for consumer "
+       . htmlspecialchars($cid)
+       . "!</h4>";
+}
 
-    // Display all stored bills
-    $result = $conn->query("SELECT * FROM eb_bills");
+// Display historical records
+$result = $conn->query("SELECT * FROM eb_bills");
 
-    echo "<h3>Stored Billing Records</h3>";
-    echo "<table>";
-    echo "<tr>
-            <th>Consumer ID</th>
+if ($result && $result->num_rows > 0) {
+    echo "
+    <h3>Historical Accounts Statement</h3>
+
+    <table border='1' cellpadding='4' cellspacing='0'>
+        <tr>
+            <th>CID</th>
             <th>Name</th>
             <th>Units</th>
-            <th>Amount</th>
-          </tr>";
+            <th>Total Bill</th>
+        </tr>
+    ";
 
     while ($row = $result->fetch_assoc()) {
-        echo "<tr>";
-        echo "<td>" . htmlspecialchars($row["cid"]) . "</td>";
-        echo "<td>" . htmlspecialchars($row["cname"]) . "</td>";
-        echo "<td>" . htmlspecialchars($row["units"]) . "</td>";
-        echo "<td>₹" . htmlspecialchars($row["amount"]) . "</td>";
-        echo "</tr>";
+        echo "
+        <tr>
+            <td>" . htmlspecialchars($row["cid"]) . "</td>
+            <td>" . htmlspecialchars($row["cname"]) . "</td>
+            <td>" . htmlspecialchars($row["units"]) . "</td>
+            <td>₹" . number_format($row["amount"], 2) . "</td>
+        </tr>
+        ";
     }
 
     echo "</table>";
-
-    $conn->close();
 }
-?>
 
-</div>
+$conn->close();
+?>
 
 </body>
 </html>
