@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Array Merging</title>
+</head>
+<body>
+
+<?php
+$array_fruits = array("Mango", "Pineapple");
+$array_veggies = array("Carrot", "Potato", "Tomato");
+
+echo "<h3>Array Consolidation Engine</h3>";
+
+echo "<b>Set A:</b><br>";
+echo "<pre>";
+print_r($array_fruits);
+echo "</pre>";
+
+echo "<b>Set B:</b><br>";
+echo "<pre>";
+print_r($array_veggies);
+echo "</pre>";
+
+// Merge both arrays
+$unified_catalog = array_merge($array_fruits, $array_veggies);
+
+echo "<b>Unified Result Output:</b><br>";
+echo "<pre>";
+print_r($unified_catalog);
+echo "</pre>";
+?>
+
+</body>
+</html>
