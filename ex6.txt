@@ -1,25 +1,28 @@
 <?php
 
-$marks = array(78, 92, 45, 88, 61, 99);
+$filename = __DIR__ . "/lab_log.txt";
 
-echo "<h3>Student Marks Array Sorter</h3>";
+echo "<h3>File System Manipulation Engine</h3>";
 
-echo "Unsorted Marks: " . implode(", ", $marks) . "<br><br>";
+$file_handle = fopen($filename, "w")
+    or die("Unable to open the file for writing!");
 
-sort($marks);
+$txt_payload = "Operating Systems and Web Scripting Lab Data.\n";
+$txt_payload .= "Timestamp Log Registered Successfully.";
 
-echo "Marks Sorted Ascending (Lowest First):<br>";
+fwrite($file_handle, $txt_payload);
+fclose($file_handle);
 
-foreach ($marks as $m) {
-    echo $m . " ";
-}
+echo "Status: File created and text written successfully.<br>";
 
-rsort($marks);
+$file_handle = fopen($filename, "r")
+    or die("Unable to open the file for reading!");
 
-echo "<br><br>Marks Sorted Descending (Highest First):<br>";
+$file_content = fread($file_handle, filesize($filename));
 
-foreach ($marks as $m) {
-    echo $m . " ";
-}
+fclose($file_handle);
+
+echo "<br><strong>Content Extracted From File:</strong><br>";
+echo nl2br(htmlspecialchars($file_content));
 
 ?>
