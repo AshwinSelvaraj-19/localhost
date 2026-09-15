@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Person Bio-Data</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 40px;
+        }
+
+        .bio-card {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #1a365d;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .field {
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #4a5568;
+        }
+    </style>
+</head>
+
+<body>
+
+<?php
+    // Define Bio-data variables
+    $name = "Arjun Kumar";
+    $dob = "15th August 2002";
+    $email = "arjun.kumar@example.com";
+    $qualification = "Bachelor of Technology (CSE)";
+    $skills = "PHP, MySQL, JavaScript, Python";
+?>
+
+<div class="bio-card">
+    <h2>Personal Bio-Data</h2>
+
+    <div class="field">
+        <span class="label">Full Name:</span>
+        <?php echo htmlspecialchars($name); ?>
+    </div>
+
+    <div class="field">
+        <span class="label">Date of Birth:</span>
+        <?php echo htmlspecialchars($dob); ?>
+    </div>
+
+    <div class="field">
+        <span class="label">Email Address:</span>
+        <?php echo htmlspecialchars($email); ?>
+    </div>
+
+    <div class="field">
+        <span class="label">Qualification:</span>
+        <?php echo htmlspecialchars($qualification); ?>
+    </div>
+
+    <div class="field">
+        <span class="label">Technical Skills:</span>
+        <?php echo htmlspecialchars($skills); ?>
+    </div>
+</div>
+
+</body>
+</html>
