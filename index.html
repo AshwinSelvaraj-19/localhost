@@ -1,277 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<h1>PHP Practical Program Finder</h1>
 
-    <title>PHP Practical Program Finder</title>
+<form id="programForm">
+    <label for="programId">Employee ID / Program ID:</label>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+    <input
+        type="number"
+        id="programId"
+        min="1"
+        max="10"
+        placeholder="Enter ID from 1 to 10"
+        required
+    >
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #111827, #1e293b);
-            color: #f8fafc;
-            padding: 30px 15px;
-        }
+    <button type="submit">Submit</button>
+</form>
 
-        .container {
-            width: 100%;
-            max-width: 850px;
-            margin: auto;
-        }
+<h2 id="programTitle">Selected Program</h2>
 
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
+<pre id="programContent">
+Enter an ID from 1 to 10.
+</pre>
 
-        .header h1 {
-            margin-bottom: 8px;
-            font-size: 32px;
-        }
+<button type="button" id="copyButton" disabled>
+    Copy Program
+</button>
 
-        .header p {
-            color: #cbd5e1;
-        }
-
-        .card {
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        form {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        input {
-            flex: 1;
-            min-width: 0;
-            padding: 14px;
-            border: 1px solid #475569;
-            border-radius: 8px;
-            background: #020617;
-            color: white;
-            font-size: 16px;
-            outline: none;
-        }
-
-        input:focus {
-            border-color: #38bdf8;
-        }
-
-        button {
-            border: none;
-            border-radius: 8px;
-            padding: 14px 20px;
-            background: #0284c7;
-            color: white;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #0369a1;
-        }
-
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .program-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
-        .program-header h2 {
-            margin: 0;
-            font-size: 20px;
-        }
-
-        pre {
-            white-space: pre-wrap;
-            overflow-wrap: anywhere;
-            background: #020617;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 20px;
-            min-height: 180px;
-            max-height: 600px;
-            overflow-y: auto;
-            color: #dbeafe;
-            line-height: 1.6;
-            font-family: Consolas, monospace;
-        }
-
-        .message {
-            margin-top: 15px;
-            color: #facc15;
-        }
-
-        .success {
-            color: #4ade80;
-        }
-
-        .error {
-            color: #f87171;
-        }
-
-        @media (max-width: 600px) {
-            form {
-                flex-direction: column;
-            }
-
-            button {
-                width: 100%;
-            }
-
-            .header h1 {
-                font-size: 25px;
-            }
-
-            .card {
-                padding: 18px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="container">
-
-    <div class="header">
-        <h1>PHP Practical Program Finder</h1>
-        <p>Enter an employee/program ID to view the corresponding practical program.</p>
-    </div>
-
-    <div class="card">
-
-        <form id="programForm">
-            <input
-                type="number"
-                id="programId"
-                min="1"
-                max="10"
-                placeholder="Enter program ID: 1 to 10"
-                required
-            >
-
-            <button type="submit" id="submitButton">
-                Get Program
-            </button>
-        </form>
-
-        <div class="program-header">
-            <h2 id="programTitle">Selected Program</h2>
-
-            <button id="copyButton" type="button" disabled>
-                Copy Program
-            </button>
-        </div>
-
-        <pre id="programContent">Enter an ID from 1 to 10 and click "Get Program".</pre>
-
-        <div id="message" class="message"></div>
-
-    </div>
-</div>
+<p id="message"></p>
 
 <script>
-    const programForm = document.getElementById("programForm");
-    const programIdInput = document.getElementById("programId");
-    const programContent = document.getElementById("programContent");
+    const form = document.getElementById("programForm");
+    const programId = document.getElementById("programId");
     const programTitle = document.getElementById("programTitle");
+    const programContent = document.getElementById("programContent");
     const copyButton = document.getElementById("copyButton");
-    const submitButton = document.getElementById("submitButton");
     const message = document.getElementById("message");
 
     let selectedProgram = "";
 
-    programForm.addEventListener("submit", async function (event) {
+    form.addEventListener("submit", async function (event) {
         event.preventDefault();
 
-        const programId = Number(programIdInput.value);
+        const id = Number(programId.value);
 
-        if (!Number.isInteger(programId) || programId < 1 || programId > 10) {
-            message.textContent = "Please enter a valid ID between 1 and 10.";
-            message.className = "message error";
+        if (id < 1 || id > 10) {
+            message.textContent = "Enter a number between 1 and 10.";
             return;
         }
 
-        const fileName = `ex${programId}.txt`;
-
-        submitButton.disabled = true;
-        copyButton.disabled = true;
-
-        programTitle.textContent = `Experiment ${programId}`;
-        programContent.textContent = "Loading program...";
-        message.textContent = "";
+        const fileName = "ex" + id + ".txt";
 
         try {
-            const response = await fetch(fileName, {
-                cache: "no-cache"
-            });
+            const response = await fetch(fileName);
 
             if (!response.ok) {
-                throw new Error("Program file was not found.");
+                throw new Error("File not found");
             }
 
-            const programText = await response.text();
+            selectedProgram = await response.text();
 
-            selectedProgram = programText;
-            programContent.textContent = programText;
+            programTitle.textContent = "Experiment " + id;
+            programContent.textContent = selectedProgram;
             copyButton.disabled = false;
-
-            message.textContent = `${fileName} loaded successfully.`;
-            message.className = "message success";
+            message.textContent = fileName + " loaded successfully.";
 
         } catch (error) {
             selectedProgram = "";
-            programContent.textContent = "Unable to load the selected program.";
-            message.textContent =
-                `Error: ${error.message} Make sure ${fileName} exists in the repository.`;
-            message.className = "message error";
-
-        } finally {
-            submitButton.disabled = false;
+            programContent.textContent = "";
+            copyButton.disabled = true;
+            message.textContent = "Unable to load " + fileName + ".";
         }
     });
 
     copyButton.addEventListener("click", async function () {
-        if (!selectedProgram) {
-            return;
-        }
-
-        try {
+        if (selectedProgram !== "") {
             await navigator.clipboard.writeText(selectedProgram);
-
-            message.textContent = "Program copied to clipboard.";
-            message.className = "message success";
-
-        } catch (error) {
-            message.textContent =
-                "Copy failed. Please select and copy the program manually.";
-            message.className = "message error";
+            message.textContent = "Program copied successfully.";
         }
     });
 </script>
-
-</body>
-</html>
