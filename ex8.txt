@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MySQL Records Processing</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            padding: 30px;
+        }
+
+        h2 {
+            color: #1a365d;
+        }
+
+        table {
+            border-collapse: collapse;
+            background: white;
+            width: 700px;
+            max-width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #555;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #1a365d;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<?php
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db = "college_db";
+
+// Connect to MySQL server
+$conn = new mysqli($host, $user, $pass);
+
+if ($conn->connect_error) {
+    die("Database connection failed: " . $conn->connect_error);
+}
+
+// Create database
+if (!$conn->query("CREATE DATABASE IF NOT EXISTS $db")) {
+    die("Database creation failed: " . $conn->error);
+}
+
+// Select database
+$conn->select_db($db);
+
+// Create table with constraints
+$table_sql = "
+    CREATE TABLE IF NOT EXISTS students (
+        reg_no INT PRIMARY KEY,
+        stud_name VARCHAR(50) NOT NULL,
+        email VARCHAR(50) UNIQUE,
+        course VARCHAR(20) DEFAULT 'B.Tech'
+    )
+";
+
+if (!$conn->query($table_sql)) {
+    die("Table creation failed: " . $conn->error);
+}
+
+// Clear old records for repeated execution
+if (!$conn->query("TRUNCATE TABLE students")) {
+    die("Table clearing failed: " . $conn->error);
+}
+
+// Insert records
+$insert1 = "
+    INSERT INTO students
+    VALUES (101, 'Rahul Sharma', 'rahul@mail.com', 'B.Tech')
+";
+
+$insert2 = "
+    INSERT INTO students
+    VALUES (102, 'Aditi Rao', 'aditi@mail.com', 'M.Tech')
+";
+
+if (!$conn->query($insert1)) {
+    die("First insertion failed: " . $conn->error);
+}
+
+if (!$conn->query($insert2)) {
+    die("Second insertion failed: " . $conn->error);
+}
+
+// Update record
+$update_sql = "
+    UPDATE students
+    SET course = 'B.Tech (Honors)'
+    WHERE reg_no = 101
+";
+
+if (!$conn->query($update_sql)) {
+    die("Update failed: " . $conn->error);
+}
+
+// Retrieve records
+$result = $conn->query("SELECT * FROM students");
+
+if (!$result) {
+    die("Selection failed: " . $conn->error);
+}
+
+echo "<h2>MySQL Records Processing Matrix</h2>";
+
+echo "<table>";
+echo "<tr>";
+echo "<th>Reg No</th>";
+echo "<th>Name</th>";
+echo "<th>Email</th>";
+echo "<th>Course</th>";
+echo "</tr>";
+
+while ($row = $result->fetch_assoc()) {
+    echo "<tr>";
+    echo "<td>" . htmlspecialchars($row["reg_no"]) . "</td>";
+    echo "<td>" . htmlspecialchars($row["stud_name"]) . "</td>";
+    echo "<td>" . htmlspecialchars($row["email"]) . "</td>";
+    echo "<td>" . htmlspecialchars($row["course"]) . "</td>";
+    echo "</tr>";
+}
+
+echo "</table>";
+
+// Close connection
+$conn->close();
+?>
+
+</body>
+</html>
