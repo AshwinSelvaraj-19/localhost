@@ -1,38 +1,25 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Array Sorting</title>
-</head>
-<body>
-
 <?php
-$numbers = array(45, 12, 89, 34, 7, 61);
 
-echo "<h3>Array Sorting Program</h3>";
+$marks = array(78, 92, 45, 88, 61, 99);
 
-echo "<b>Original Array:</b><br>";
-echo "<pre>";
-print_r($numbers);
-echo "</pre>";
+echo "<h3>Student Marks Array Sorter</h3>";
 
-// Ascending order
-sort($numbers);
+echo "Unsorted Marks: " . implode(", ", $marks) . "<br><br>";
 
-echo "<b>Ascending Order:</b><br>";
-echo "<pre>";
-print_r($numbers);
-echo "</pre>";
+sort($marks);
 
-// Descending order
-rsort($numbers);
+echo "Marks Sorted Ascending (Lowest First):<br>";
 
-echo "<b>Descending Order:</b><br>";
-echo "<pre>";
-print_r($numbers);
-echo "</pre>";
+foreach ($marks as $m) {
+    echo $m . " ";
+}
+
+rsort($marks);
+
+echo "<br><br>Marks Sorted Descending (Highest First):<br>";
+
+foreach ($marks as $m) {
+    echo $m . " ";
+}
+
 ?>
-
-</body>
-</html>
