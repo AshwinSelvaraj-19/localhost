@@ -1,42 +1,3 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>MySQL Records Processing</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f2f2f2;
-            padding: 30px;
-        }
-
-        h2 {
-            color: #1a365d;
-        }
-
-        table {
-            border-collapse: collapse;
-            background: white;
-            width: 700px;
-            max-width: 100%;
-        }
-
-        th, td {
-            border: 1px solid #555;
-            padding: 10px;
-            text-align: left;
-        }
-
-        th {
-            background: #1a365d;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-
 <?php
 $host = "localhost";
 $user = "root";
@@ -47,97 +8,108 @@ $db = "college_db";
 $conn = new mysqli($host, $user, $pass);
 
 if ($conn->connect_error) {
-    die("Database connection failed: " . $conn->connect_error);
+    die("DBMS Connection Failed: " . $conn->connect_error);
 }
 
 // Create database
-if (!$conn->query("CREATE DATABASE IF NOT EXISTS $db")) {
-    die("Database creation failed: " . $conn->error);
+if (!$conn->query("CREATE DATABASE IF NOT EXISTS college_db")) {
+    die("Database Creation Failed: " . $conn->error);
 }
 
 // Select database
 $conn->select_db($db);
 
-// Create table with constraints
+// Create table
 $table_sql = "
     CREATE TABLE IF NOT EXISTS students (
         reg_no INT PRIMARY KEY,
         stud_name VARCHAR(50) NOT NULL,
         email VARCHAR(50) UNIQUE,
-        course VARCHAR(20) DEFAULT 'B.Tech'
+        course VARCHAR(30) DEFAULT 'B.Tech'
     )
 ";
 
 if (!$conn->query($table_sql)) {
-    die("Table creation failed: " . $conn->error);
+    die("Table Creation Failed: " . $conn->error);
 }
 
-// Clear old records for repeated execution
+// Clear previous records
 if (!$conn->query("TRUNCATE TABLE students")) {
-    die("Table clearing failed: " . $conn->error);
+    die("Table Truncation Failed: " . $conn->error);
 }
 
-// Insert records
-$insert1 = "
-    INSERT INTO students
-    VALUES (101, 'Rahul Sharma', 'rahul@mail.com', 'B.Tech')
+// Insert records using prepared statements
+$insert_sql = "
+    INSERT INTO students (reg_no, stud_name, email, course)
+    VALUES (?, ?, ?, ?)
 ";
 
-$insert2 = "
-    INSERT INTO students
-    VALUES (102, 'Aditi Rao', 'aditi@mail.com', 'M.Tech')
-";
+$stmt = $conn->prepare($insert_sql);
 
-if (!$conn->query($insert1)) {
-    die("First insertion failed: " . $conn->error);
-}
+$reg_no = 101;
+$stud_name = "Rahul Sharma";
+$email = "rahul@email.com";
+$course = "B.Tech";
 
-if (!$conn->query($insert2)) {
-    die("Second insertion failed: " . $conn->error);
-}
+$stmt->bind_param("isss", $reg_no, $stud_name, $email, $course);
+$stmt->execute();
+
+$reg_no = 102;
+$stud_name = "Aditi Rao";
+$email = "aditi@email.com";
+$course = "M.Tech";
+
+$stmt->execute();
+$stmt->close();
 
 // Update record
 $update_sql = "
     UPDATE students
-    SET course = 'B.Tech (Honors)'
-    WHERE reg_no = 101
+    SET course = ?
+    WHERE reg_no = ?
 ";
 
-if (!$conn->query($update_sql)) {
-    die("Update failed: " . $conn->error);
-}
+$stmt = $conn->prepare($update_sql);
 
-// Retrieve records
+$updated_course = "B.Tech(Honors)";
+$student_reg_no = 101;
+
+$stmt->bind_param("si", $updated_course, $student_reg_no);
+$stmt->execute();
+$stmt->close();
+
+// Select records
 $result = $conn->query("SELECT * FROM students");
 
 if (!$result) {
-    die("Selection failed: " . $conn->error);
+    die("Record Selection Failed: " . $conn->error);
 }
 
-echo "<h2>MySQL Records Processing Matrix</h2>";
+// Display records
+echo "<h3>MySQL Records Processing Matrix</h3>";
 
-echo "<table>";
-echo "<tr>";
-echo "<th>Reg No</th>";
-echo "<th>Name</th>";
-echo "<th>Email</th>";
-echo "<th>Course</th>";
-echo "</tr>";
+echo "
+<table border='1' cellpadding='5' cellspacing='0'>
+    <tr>
+        <th>Reg No</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Course</th>
+    </tr>
+";
 
 while ($row = $result->fetch_assoc()) {
-    echo "<tr>";
-    echo "<td>" . htmlspecialchars($row["reg_no"]) . "</td>";
-    echo "<td>" . htmlspecialchars($row["stud_name"]) . "</td>";
-    echo "<td>" . htmlspecialchars($row["email"]) . "</td>";
-    echo "<td>" . htmlspecialchars($row["course"]) . "</td>";
-    echo "</tr>";
+    echo "
+    <tr>
+        <td>" . htmlspecialchars($row["reg_no"]) . "</td>
+        <td>" . htmlspecialchars($row["stud_name"]) . "</td>
+        <td>" . htmlspecialchars($row["email"]) . "</td>
+        <td>" . htmlspecialchars($row["course"]) . "</td>
+    </tr>
+    ";
 }
 
 echo "</table>";
 
-// Close connection
 $conn->close();
 ?>
-
-</body>
-</html>
