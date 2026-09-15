@@ -1,20 +1,12 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>File Manipulation</title>
-</head>
-<body>
-
 <?php
-$filename = "lab_log.txt";
+
+$filename = __DIR__ . "/lab_log.txt";
 
 echo "<h3>File System Manipulation Engine</h3>";
 
-// 1. Create and write into the file
+// Create and write to the file
 $file_handle = fopen($filename, "w")
-    or die("Unable to open file for writing!");
+    or die("Unable to create the file!");
 
 $txt_payload = "Operating Systems and Web Scripting Lab Data.\n";
 $txt_payload .= "Timestamp Log Registered Successfully.";
@@ -22,18 +14,17 @@ $txt_payload .= "Timestamp Log Registered Successfully.";
 fwrite($file_handle, $txt_payload);
 fclose($file_handle);
 
-echo "Status: Created file and wrote text payload successfully.<br>";
+echo "Status: File created and text written successfully.<br>";
 
-// 2. Read the file
+// Read the file
 $file_handle = fopen($filename, "r")
-    or die("Unable to open file for reading!");
+    or die("Unable to open the file for reading!");
 
 $file_content = fread($file_handle, filesize($filename));
 fclose($file_handle);
 
 echo "<br><strong>Content Extracted From File:</strong><br>";
-echo nl2br(htmlspecialchars($file_content));
-?>
 
-</body>
-</html>
+echo nl2br(htmlspecialchars($file_content));
+
+?>
