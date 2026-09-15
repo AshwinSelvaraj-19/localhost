@@ -1,0 +1,24 @@
+
+<?php
+$original_array = array("Apple", "Banana", "Cherry", "Date");
+
+echo "<h3>Array Insertion Program</h3>";
+
+echo "Original Array:<br>";
+echo "<pre>";
+print_r($original_array);
+echo "</pre>";
+
+$inserted_element = "Orange";
+$insert_position = 2;
+
+echo "Inserting '$inserted_element' at index position $insert_position...<br><br>";
+
+// Insert the element without removing existing elements
+array_splice($original_array, $insert_position, 0, $inserted_element);
+
+echo "Modified Array:<br>";
+echo "<pre>";
+print_r($original_array);
+echo "</pre>";
+?>
