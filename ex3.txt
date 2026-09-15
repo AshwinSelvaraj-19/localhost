@@ -1,0 +1,25 @@
+
+<?php
+function generateRandomPassword($length = 12)
+{
+    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=+";
+
+    $password = "";
+    $charLength = strlen($chars);
+
+    for ($i = 0; $i < $length; $i++) {
+        $randomIndex = rand(0, $charLength - 1);
+        $password .= $chars[$randomIndex];
+    }
+
+    return $password;
+}
+
+// Function call
+$my_new_pass = generateRandomPassword(10);
+
+echo "<h3>Generated Random Password</h3>";
+echo "Temporary Password: <strong>" .
+     htmlspecialchars($my_new_pass, ENT_QUOTES, 'UTF-8') .
+     "</strong>";
+?>
