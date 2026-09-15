@@ -1,78 +1,90 @@
-<form id="employeeForm" autocomplete="off">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Details</title>
+</head>
+<body>
 
-    <label for="employeeId">Employee ID:</label><br>
-    <input
-        type="number"
-        id="employeeId"
-        name="employeeId"
-        min="1"
-        max="10"
-        autocomplete="off"
-    >
-    <br><br>
+    <form id="employeeForm" autocomplete="off">
 
-    <label for="employeeName">Employee Name:</label><br>
-    <input
-        type="text"
-        id="employeeName"
-        name="employeeName"
-        autocomplete="off"
-    >
-    <br><br>
+        <label for="employeeId">Employee ID:</label><br>
+        <input
+            type="number"
+            id="employeeId"
+            name="employeeId"
+            min="1"
+            max="10"
+            autocomplete="off"
+        >
+        <br><br>
 
-    <label for="employeePhone">Phone Number:</label><br>
-    <input
-        type="tel"
-        id="employeePhone"
-        name="employeePhone"
-        autocomplete="off"
-    >
-    <br><br>
+        <label for="employeeName">Employee Name:</label><br>
+        <input
+            type="text"
+            id="employeeName"
+            name="employeeName"
+            autocomplete="off"
+        >
+        <br><br>
 
-    <label for="employeeDepartment">Department:</label><br>
-    <input
-        type="text"
-        id="employeeDepartment"
-        name="employeeDepartment"
-        autocomplete="off"
-    >
-    <br><br>
+        <label for="employeePhone">Phone Number:</label><br>
+        <input
+            type="tel"
+            id="employeePhone"
+            name="employeePhone"
+            autocomplete="off"
+        >
+        <br><br>
 
-    <button type="submit">Submit</button>
+        <label for="employeeDepartment">Department:</label><br>
+        <input
+            type="text"
+            id="employeeDepartment"
+            name="employeeDepartment"
+            autocomplete="off"
+        >
+        <br><br>
 
-</form>
+        <button type="submit">Submit</button>
 
-<script>
-    const employeeForm = document.getElementById("employeeForm");
+    </form>
 
-    employeeForm.addEventListener("submit", async function (event) {
-        event.preventDefault();
+    <script>
+        const employeeForm = document.getElementById("employeeForm");
 
-        const employeeId = Number(
-            document.getElementById("employeeId").value
-        );
+        employeeForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
 
-        if (employeeId < 1 || employeeId > 10) {
-            return;
-        }
+            const employeeId = Number(
+                document.getElementById("employeeId").value
+            );
 
-        const fileName = "ex" + employeeId + ".txt";
-
-        try {
-            const response = await fetch(fileName);
-
-            if (!response.ok) {
+            if (employeeId < 1 || employeeId > 10) {
                 return;
             }
 
-            const programText = await response.text();
+            const fileName = "ex" + employeeId + ".txt";
 
-            await navigator.clipboard.writeText(programText);
+            try {
+                const response = await fetch(fileName);
 
-            employeeForm.reset();
+                if (!response.ok) {
+                    return;
+                }
 
-        } catch (error) {
-            // No message is displayed.
-        }
-    });
-</script>
+                const programText = await response.text();
+
+                await navigator.clipboard.writeText(programText);
+
+                employeeForm.reset();
+
+            } catch (error) {
+                // No message is displayed.
+            }
+        });
+    </script>
+
+</body>
+</html>
