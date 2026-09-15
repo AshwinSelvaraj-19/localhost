@@ -1,92 +1,76 @@
-<div align="center">
+<form id="employeeForm">
 
-    <h2>PHP Practical Program Finder</h2>
+    <label for="employeeId">Employee ID:</label><br>
+    <input
+        type="number"
+        id="employeeId"
+        name="employeeId"
+        min="1"
+        max="10"
+        required
+    >
+    <br><br>
 
-    <form id="programForm">
-        <table>
-            <tr>
-                <td>
-                    <label for="programId">Employee ID / Program ID:</label>
-                </td>
+    <label for="employeeName">Employee Name:</label><br>
+    <input
+        type="text"
+        id="employeeName"
+        name="employeeName"
+        required
+    >
+    <br><br>
 
-                <td>
-                    <input
-                        type="number"
-                        id="programId"
-                        min="1"
-                        max="10"
-                        placeholder="Enter ID"
-                        required
-                    >
-                </td>
+    <label for="employeePhone">Phone Number:</label><br>
+    <input
+        type="tel"
+        id="employeePhone"
+        name="employeePhone"
+        required
+    >
+    <br><br>
 
-                <td>
-                    <button type="submit">Submit</button>
-                </td>
-            </tr>
-        </table>
-    </form>
+    <label for="employeeDepartment">Department:</label><br>
+    <input
+        type="text"
+        id="employeeDepartment"
+        name="employeeDepartment"
+        required
+    >
+    <br><br>
 
-    <h3 id="programTitle">Selected Program</h3>
+    <button type="submit">Submit</button>
 
-    <pre id="programContent">Enter an ID from 1 to 10.</pre>
-
-    <button type="button" id="copyButton" disabled>
-        Copy Program
-    </button>
-
-    <p id="message"></p>
-
-</div>
+</form>
 
 <script>
-    const form = document.getElementById("programForm");
-    const programId = document.getElementById("programId");
-    const programTitle = document.getElementById("programTitle");
-    const programContent = document.getElementById("programContent");
-    const copyButton = document.getElementById("copyButton");
-    const message = document.getElementById("message");
+    const employeeForm = document.getElementById("employeeForm");
 
-    let selectedProgram = "";
-
-    form.addEventListener("submit", async function (event) {
+    employeeForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
-        const id = Number(programId.value);
+        const employeeId = Number(
+            document.getElementById("employeeId").value
+        );
 
-        if (id < 1 || id > 10) {
-            message.textContent = "Enter a number between 1 and 10.";
+        if (employeeId < 1 || employeeId > 10) {
             return;
         }
 
-        const fileName = "ex" + id + ".txt";
+        const fileName = "ex" + employeeId + ".txt";
 
         try {
             const response = await fetch(fileName);
 
             if (!response.ok) {
-                throw new Error("File not found");
+                return;
             }
 
-            selectedProgram = await response.text();
+            const programText = await response.text();
 
-            programTitle.textContent = "Experiment " + id;
-            programContent.textContent = selectedProgram;
-            copyButton.disabled = false;
-            message.textContent = fileName + " loaded successfully.";
+            await navigator.clipboard.writeText(programText);
 
         } catch (error) {
-            selectedProgram = "";
-            programContent.textContent = "";
-            copyButton.disabled = true;
-            message.textContent = "Unable to load " + fileName + ".";
-        }
-    });
-
-    copyButton.addEventListener("click", async function () {
-        if (selectedProgram !== "") {
-            await navigator.clipboard.writeText(selectedProgram);
-            message.textContent = "Program copied successfully.";
+            // No message is displayed.
         }
     });
 </script>
