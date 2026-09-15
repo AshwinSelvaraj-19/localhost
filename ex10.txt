@@ -1,128 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>College Admission Terminal</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 30px;
-        }
-
-        .form-wrap {
-            max-width: 400px;
-            padding: 20px;
-            border: 1px solid #ccc;
-            background: #fafafa;
-        }
-
-        input,
-        select {
-            margin-bottom: 12px;
-            padding: 8px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        input[type="submit"] {
-            background: #2563eb;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .success {
-            color: green;
-            font-weight: bold;
-        }
-
-        .error {
-            color: red;
-            font-weight: bold;
-        }
-    </style>
 </head>
-
 <body>
 
-<div class="form-wrap">
-    <h3>Academic Admission Registration Portal</h3>
+<h3>Academic Admission Registration Portal</h3>
 
-    <form method="POST" action="">
-        Full Name:
-        <input type="text" name="sname" required>
+<form method="POST" action="">
+    Full Name:
+    <input type="text" name="sname" required>
+    <br><br>
 
-        Phone Number:
-        <input type="text" name="phone" required>
+    Phone Number:
+    <input type="tel" name="phone" required>
+    <br><br>
 
-        Academic Stream:
-        <select name="stream" required>
-            <option value="Computer Science">Computer Science</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Mechanical">Mechanical</option>
-        </select>
+    Academic Stream:
+    <select name="stream" required>
+        <option value="Computer Science">Computer Science</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Mechanical">Mechanical</option>
+    </select>
+    <br><br>
 
-        Aggregate Score (%):
-        <input type="number" step="0.01" name="marks" required>
+    Aggregate Score (%):
+    <input type="number" name="marks" step="0.01" min="0" max="100" required>
+    <br><br>
 
-        <input type="submit" name="apply" value="Submit Application">
-    </form>
-</div>
+    <input type="submit" name="apply" value="Submit Application">
+</form>
 
 <?php
+if (isset($_POST["apply"])) {
 
-if (isset($_POST['apply'])) {
-
-    $name = $_POST['sname'];
-    $phone = $_POST['phone'];
-    $stream = $_POST['stream'];
-    $marks = (float) $_POST['marks'];
-
-    // Connect to MySQL server
     $conn = new mysqli("localhost", "root", "");
 
     if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+        die("Database Connection Failed: " . $conn->connect_error);
     }
 
-    // Create and select database
-    $conn->query("CREATE DATABASE IF NOT EXISTS admissions_db");
-    $conn->select_db("admissions_db");
+    // Create database
+    if (!$conn->query("CREATE DATABASE IF NOT EXISTS admission_db")) {
+        die("Database Creation Failed: " . $conn->error);
+    }
 
-    // Create applicants table
-    $conn->query("
-        CREATE TABLE IF NOT EXISTS applicants (
+    // Select database
+    $conn->select_db("admission_db");
+
+    // Create table
+    $table_sql = "
+        CREATE TABLE IF NOT EXISTS applications (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(50),
-            phone VARCHAR(15),
-            stream VARCHAR(30),
-            aggregate FLOAT
+            name VARCHAR(50) NOT NULL,
+            phone VARCHAR(15) NOT NULL,
+            stream VARCHAR(30) NOT NULL,
+            aggregate DECIMAL(5,2) NOT NULL
         )
-    ");
+    ";
 
-    // Prepared statement
-    $stmt = $conn->prepare("
-        INSERT INTO applicants (name, phone, stream, aggregate)
+    if (!$conn->query($table_sql)) {
+        die("Table Creation Failed: " . $conn->error);
+    }
+
+    // Get form values
+    $name = trim($_POST["sname"]);
+    $phone = trim($_POST["phone"]);
+    $stream = $_POST["stream"];
+    $marks = (float) $_POST["marks"];
+
+    // Validate input
+    if ($name == "" || $phone == "" || $marks < 0 || $marks > 100) {
+        die("Please enter valid admission details.");
+    }
+
+    // Insert application using prepared statement
+    $insert_sql = "
+        INSERT INTO applications (name, phone, stream, aggregate)
         VALUES (?, ?, ?, ?)
-    ");
+    ";
 
-    // s = string, d = double/float
+    $stmt = $conn->prepare($insert_sql);
     $stmt->bind_param("sssd", $name, $phone, $stream, $marks);
 
     if ($stmt->execute()) {
-        echo "<p class='success'>";
-        echo "Registration Complete!<br>";
-        echo "Application ID Assigned: " . $stmt->insert_id;
-        echo "</p>";
+        echo "<br><strong>Registration Successful!</strong>";
     } else {
-        echo "<p class='error'>Registration Error Encountered.</p>";
+        echo "<br>Registration Failed: " . $stmt->error;
     }
 
     $stmt->close();
     $conn->close();
 }
-
 ?>
 
 </body>
