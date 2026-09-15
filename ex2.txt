@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Details</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 30px;
+        }
+
+        .container {
+            background: white;
+            max-width: 450px;
+            margin: auto;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #1a365d;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 9px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            margin-top: 20px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #eef6ff;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Enter Employee Details</h2>
+
+    <form method="POST" action="">
+
+        <label>Employee ID:</label>
+        <input type="text" name="emp_id" required>
+
+        <label>Employee Name:</label>
+        <input type="text" name="emp_name" required>
+
+        <label>Designation:</label>
+        <input type="text" name="designation" required>
+
+        <label>Basic Salary:</label>
+        <input type="number" name="basic_sal" min="0" step="0.01" required>
+
+        <input type="submit" name="submit" value="Process Details">
+
+    </form>
+
+    <?php
+    if (isset($_POST['submit'])) {
+
+        // Read form data
+        $emp_id = $_POST['emp_id'];
+        $emp_name = $_POST['emp_name'];
+        $designation = $_POST['designation'];
+        $basic_sal = (float) $_POST['basic_sal'];
+
+        // Salary calculations
+        $hra = $basic_sal * 0.15;
+        $da = $basic_sal * 0.20;
+        $gross_salary = $basic_sal + $hra + $da;
+
+        // Display result
+        echo "<div class='result'>";
+        echo "<h3>Employee Processing Slip</h3>";
+
+        echo "Employee ID: " . htmlspecialchars($emp_id) . "<br>";
+        echo "Employee Name: " . htmlspecialchars($emp_name) . "<br>";
+        echo "Designation: " . htmlspecialchars($designation) . "<br>";
+        echo "Basic Salary: ₹" . number_format($basic_sal, 2) . "<br>";
+        echo "HRA (15%): ₹" . number_format($hra, 2) . "<br>";
+        echo "DA (20%): ₹" . number_format($da, 2) . "<br>";
+
+        echo "<strong>Gross Salary: ₹" .
+             number_format($gross_salary, 2) . "</strong>";
+
+        echo "</div>";
+    }
+    ?>
+
+</div>
+
+</body>
+</html>
