@@ -1,31 +1,43 @@
-<h1>PHP Practical Program Finder</h1>
+<div align="center">
 
-<form id="programForm">
-    <label for="programId">Employee ID / Program ID:</label>
+    <h2>PHP Practical Program Finder</h2>
 
-    <input
-        type="number"
-        id="programId"
-        min="1"
-        max="10"
-        placeholder="Enter ID from 1 to 10"
-        required
-    >
+    <form id="programForm">
+        <table>
+            <tr>
+                <td>
+                    <label for="programId">Employee ID / Program ID:</label>
+                </td>
 
-    <button type="submit">Submit</button>
-</form>
+                <td>
+                    <input
+                        type="number"
+                        id="programId"
+                        min="1"
+                        max="10"
+                        placeholder="Enter ID"
+                        required
+                    >
+                </td>
 
-<h2 id="programTitle">Selected Program</h2>
+                <td>
+                    <button type="submit">Submit</button>
+                </td>
+            </tr>
+        </table>
+    </form>
 
-<pre id="programContent">
-Enter an ID from 1 to 10.
-</pre>
+    <h3 id="programTitle">Selected Program</h3>
 
-<button type="button" id="copyButton" disabled>
-    Copy Program
-</button>
+    <pre id="programContent">Enter an ID from 1 to 10.</pre>
 
-<p id="message"></p>
+    <button type="button" id="copyButton" disabled>
+        Copy Program
+    </button>
+
+    <p id="message"></p>
+
+</div>
 
 <script>
     const form = document.getElementById("programForm");
