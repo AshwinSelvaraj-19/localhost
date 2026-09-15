@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Array Sorting</title>
+</head>
+<body>
+
+<?php
+$numbers = array(45, 12, 89, 34, 7, 61);
+
+echo "<h3>Array Sorting Program</h3>";
+
+echo "<b>Original Array:</b><br>";
+echo "<pre>";
+print_r($numbers);
+echo "</pre>";
+
+// Ascending order
+sort($numbers);
+
+echo "<b>Ascending Order:</b><br>";
+echo "<pre>";
+print_r($numbers);
+echo "</pre>";
+
+// Descending order
+rsort($numbers);
+
+echo "<b>Descending Order:</b><br>";
+echo "<pre>";
+print_r($numbers);
+echo "</pre>";
+?>
+
+</body>
+</html>
