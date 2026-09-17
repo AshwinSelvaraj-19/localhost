@@ -14,7 +14,7 @@ function generateRandomPassword($length = 12)
 
     return $password;
 }
-
+         
 // Function call
 $my_new_pass = generateRandomPassword(10);
 
